@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        /* CSS from the previous step for cleanliness */
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        h1 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-bottom: 20px; }
+        .headline-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 6px; transition: box-shadow 0.3s ease; }
+        .headline-item:hover { box-shadow: 0 0 10px rgba(0, 123, 255, 0.3); }
+        .headline-title a { font-size: 1.25em; font-weight: bold; color: #333; text-decoration: none; }
+        .headline-title a:hover { color: #007bff; text-decoration: underline; }
+        .headline-source { font-size: 0.9em; color: #666; margin-top: 5px; }
+        .message-box { padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+        .error-message { border: 1px dashed #dc3545; color: #dc3545; background-color: #f8d7da; }
+        .no-data { border: 1px dashed #ffc107; color: #856404; background-color: #fff3cd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ page_title }}</h1>
+
+        {# Display Error Message if one exists #}
+        {% if error %}
+            <div class="message-box error-message">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        
+        {# Display Headlines if found #}
+        {% elif headlines %}
+            {% for item in headlines %}
+                <div class="headline-item">
+                    <p class="headline-title">
+                        {# Link the title to the headline URL #}
+                        <a href="{{ item.url }}" target="_blank">
+                            {{ item.title }}
+                        </a>
+                    </p>
+                    <p class="headline-source">
+                        Source: <strong>{{ item.source }}</strong>
+                    </p>
+                </div>
+            {% endfor %}
+            
+        {# Display No Data Message #}
+        {% else %}
+            <div class="message-box no-data">
+                No news headlines were found in the database. Please ensure your MongoDB service is running and run the Scrapy spider (`IndianExpress`) to populate the database.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

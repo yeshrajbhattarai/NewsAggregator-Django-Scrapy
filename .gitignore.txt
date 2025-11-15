@@ -1,0 +1,24 @@
+# Python/Django/OS files to ignore
+__pycache__/
+*.pyc
+*.swp
+*~
+.DS_Store
+
+# Virtual Environment
+myenv/
+venv/
+*.egg-info/
+
+# Django specific
+db.sqlite3
+/newsapp/media/
+/newsapp/static/
+
+# Scrapy specific logs and temporary files
+*.log
+.scrapy/
+
+# MongoDB
+/data/db/
+/mongod.log

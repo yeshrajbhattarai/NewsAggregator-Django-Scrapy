@@ -1,0 +1,90 @@
+/* ======================================================= */
+/* GLOBAL STYLES & MOBILE OVERRIDES (from previous answer) */
+/* ======================================================= */
+body {
+    background-color: #f8f9fa; /* Light background for the main content */
+}
+.main-header {
+    background-color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* On mobile, the header is full-width */
+}
+.main-header .app-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+/* Offcanvas/List Group Styles (Used by both sidebars) */
+.list-group-item {
+    border-radius: 0 !important;
+    border-left: none;
+    border-right: none;
+    padding: 1rem 1.5rem;
+    font-size: 1.1em;
+    color: #333;
+}
+.list-group-item:hover {
+    background-color: #e9ecef;
+    color: #007bff;
+}
+.list-group-item.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+.list-group-item i {
+    margin-right: 10px;
+}
+
+#desktopSidebar {
+    width: 280px; 
+    height: 100vh; /* Takes full height of the viewport */
+    position: fixed; /* Keeps it in place while the content scrolls */
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    border-right: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column; /* To make the footer stick to the bottom */
+}
+
+/* Ensure the main content doesn't get hidden under the sidebar */
+main {
+    margin-left: 280px; /* Must match the width of the desktop sidebar */
+    min-height: 100vh;
+}
+
+.sidebar-header {
+    background-color: #007bff;
+    color: white;
+    padding: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 1rem 1.5rem;
+    font-size: 0.9em;
+    color: #6c757d;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    margin-top: auto; /* Pushes the footer to the bottom */
+}
+
+/* Offcanvas Header Styles (for mobile view) */
+.offcanvas-header {
+    background-color: #007bff;
+    color: white;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.offcanvas-header .btn-close {
+    filter: invert(1);
+}
