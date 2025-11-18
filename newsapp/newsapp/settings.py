@@ -86,19 +86,14 @@ DATABASES = {
 MONGO_URI = os.environ.get('MONGO_URI')
 
 if MONGO_URI:
-    # CLOUD MODE (Render / GitHub Actions)
-    # 'tlsCAFile=certifi.where()' is REQUIRED for Atlas on some cloud servers
     client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
     print("🔌 Connected to MongoDB Atlas")
 else:
-    # LOCAL MODE (Your Laptop)
-    # Fallback if no secret is set
     client = MongoClient('mongodb://localhost:27017/')
     print("🏠 Connected to Localhost MongoDB")
 
-# 2. Define the Database
-# This 'db' variable can be imported in your views.py
-db = client['news_db']
+# FIX: Change 'db' to 'MONGO_DB' (Uppercase is required!)
+MONGO_DB = client['news_db']
 
 
 # Password validation
