@@ -59,7 +59,8 @@ DOWNLOAD_DELAY = 3
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "newsScraper.pipelines.NewsscraperPipeline": 300,
+   # FIX: Updated the class name from 'NewsscraperPipeline' to 'MongoPipeline'
+   'newsScraper.pipelines.MongoPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

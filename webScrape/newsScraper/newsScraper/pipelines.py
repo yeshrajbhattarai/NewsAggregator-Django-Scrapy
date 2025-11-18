@@ -1,41 +1,56 @@
-# \webScrape\newsScraper\newsScraper\pipelines.py
+from pymongo import MongoClient
+from itemadapter import ItemAdapter
+import os
+import certifi
+from datetime import datetime
 
-import pymongo 
-from scrapy.exceptions import DropItem
+class MongoPipeline:
+    # CRITICAL FIX: Changed 'NewsHeadlines_tb' to 'headlines' 
+    collection_name = 'headlines'
+    db_name = 'news_db' 
 
-class NewsscraperPipeline:
-    
-    # CRITICAL: These MUST match Django's views.py EXACTLY.
-    MONGO_URI = "mongodb://localhost:27017/"
-    DB_NAME = 'newsDB'
-    COLLECTION_NAME = 'NewsHeadlines_tb'
-
-    def __init__(self):
+    def __init__(self, mongo_uri):
+        self.mongo_uri = mongo_uri
         self.client = None
-        self.db = None
-        self.collection = None
-        
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        # Fetches the MONGO_URI from the GitHub Action secret
+        mongo_uri = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
+        return cls(mongo_uri=mongo_uri)
+
     def open_spider(self, spider):
-        # Establish connection on spider start
-        self.client = pymongo.MongoClient(self.MONGO_URI)
-        self.db = self.client[self.DB_NAME]
-        self.collection = self.db[self.COLLECTION_NAME]
-        
+        # Establish the Atlas connection (using certifi for cloud stability)
+        try:
+            self.client = MongoClient(self.mongo_uri, tlsCAFile=certifi.where())
+            self.db = self.client[self.db_name]
+            spider.logger.info(f"--- Pipeline: Connected to Mongo Atlas DB: {self.db_name} ---")
+        except Exception as e:
+            spider.logger.error(f"--- FATAL MONGO DB ERROR: {e} ---")
+            self.client = None # Prevents process_item from crashing
+
     def close_spider(self, spider):
-        # Close connection gracefully
         if self.client:
             self.client.close()
 
     def process_item(self, item, spider):
-        item_data = dict(item) 
-        
-        # Check for duplicates using the unique URL field
-        # Using dict(item) ensures the data written is pure Python dict
-        if self.collection.count_documents({'url': item_data['url']}, limit=1):
-            spider.logger.info(f"Duplicate item found: {item_data['title']}")
-            raise DropItem(f"Duplicate item: {item_data['title']}")
-        else:
-            self.collection.insert_one(item_data)
-            spider.logger.info(f"Saved new headline: {item_data['title']}")
+        if self.client:
+            adapter = ItemAdapter(item)
+            
+            # The item object MUST have 'url' to prevent duplicates
+            if 'url' not in adapter:
+                 spider.logger.warning("Item missing 'url' field, skipping.")
+                 return item
 
+            # Insert/Update the item based on the link (upsert=True)
+            self.db[self.collection_name].update_one(
+                {'link': adapter['url']},
+                {'$set': {
+                    'title': adapter['title'],
+                    'link': adapter['url'],
+                    'source': adapter.get('source', 'IndianExpress'),
+                    'scraped_at': datetime.now() # Add scrape timestamp for sorting
+                }},
+                upsert=True
+            )
         return item
