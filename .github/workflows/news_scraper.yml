@@ -1,0 +1,39 @@
+name: News Spider Cron
+
+on:
+  schedule:
+    # Runs at minute 0 past every hour (Every 60 mins)
+    - cron: '0 * * * *'
+  # Allows you to run it manually from GitHub dashboard for testing
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Install Scrapy and other required libraries
+        pip install scrapy pymongo certifi dnspython django gunicorn lxml
+
+    - name: Run Scraper
+      env:
+        # We will use the secret you already set in GitHub Settings
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        # Point to your Django settings module
+        DJANGO_SETTINGS_MODULE: newsapp.settings 
+      run: |
+        # Navigate to the folder containing scrapy.cfg
+        cd webScrape/newsScraper
+        # Run the spider
+        scrapy crawl IndianExpress
